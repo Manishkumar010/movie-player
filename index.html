@@ -3,1448 +3,1257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamFlix - Watch Free Movies & TV Shows</title>
+    <title>StreamFlix</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --bg-card: #1a1a2e;
-            --bg-hover: #16213e;
+            --bg: #0a0a0f;
+            --bg2: #12121a;
+            --card: #1a1a2e;
             --accent: #e50914;
-            --accent-hover: #ff1a1a;
-            --accent-glow: rgba(229, 9, 20, 0.3);
-            --text-primary: #ffffff;
-            --text-secondary: #b3b3b3;
-            --text-muted: #666680;
-            --border: rgba(255, 255, 255, 0.08);
-            --gradient: linear-gradient(135deg, #e50914, #ff6b35);
+            --glow: rgba(229,9,20,0.3);
+            --text: #ffffff;
+            --text2: #b3b3b3;
+            --muted: #666680;
+            --border: rgba(255,255,255,0.08);
+            --grad: linear-gradient(135deg,#e50914,#ff6b35);
         }
 
         body {
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, sans-serif;
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
 
-        .navbar {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 1000;
-            background: linear-gradient(180deg, rgba(10,10,15,0.98) 0%, rgba(10,10,15,0.85) 100%);
+        /* NAVBAR */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            height: 60px;
+            background: rgba(10,10,15,0.97);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
-            padding: 0 24px;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
+            display: flex; align-items: center;
+            padding: 0 20px; gap: 16px;
         }
 
         .logo {
-            font-size: 24px;
-            font-weight: 900;
-            background: var(--gradient);
+            font-size: 22px; font-weight: 900;
+            background: var(--grad);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            letter-spacing: -0.5px;
-            white-space: nowrap;
-            cursor: pointer;
+            cursor: pointer; white-space: nowrap;
         }
 
-        .logo span { font-weight: 300; }
+        .search-wrap { flex: 1; max-width: 550px; position: relative; }
 
-        .search-container {
-            flex: 1;
-            max-width: 600px;
-            position: relative;
-        }
-
-        .search-box {
+        .search-inp {
             width: 100%;
             background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 50px;
-            padding: 10px 90px 10px 20px;
-            color: var(--text-primary);
-            font-size: 14px;
-            outline: none;
-            transition: all 0.3s ease;
+            padding: 9px 85px 9px 18px;
+            color: #fff; font-size: 14px; outline: none;
+            transition: all 0.3s;
         }
 
-        .search-box:focus {
+        .search-inp:focus {
             border-color: var(--accent);
-            background: rgba(255,255,255,0.08);
-            box-shadow: 0 0 0 3px var(--accent-glow);
+            box-shadow: 0 0 0 3px var(--glow);
         }
 
-        .search-box::placeholder { color: var(--text-muted); }
+        .search-inp::placeholder { color: var(--muted); }
 
         .search-btn {
-            position: absolute;
-            right: 8px;
-            top: 50%;
+            position: absolute; right: 6px; top: 50%;
             transform: translateY(-50%);
-            background: var(--gradient);
-            border: none;
-            border-radius: 50px;
-            padding: 6px 16px;
-            color: white;
-            cursor: pointer;
-            font-size: 13px;
+            background: var(--grad);
+            border: none; border-radius: 50px;
+            padding: 6px 14px;
+            color: #fff; font-size: 13px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+        }
+
+        .search-btn:hover { box-shadow: 0 0 15px var(--glow); }
+
+        /* PROXY CONFIG BOX */
+        .proxy-config {
+            background: rgba(229,9,20,0.08);
+            border: 1px solid rgba(229,9,20,0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 80px 24px 0;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .proxy-config.hidden { display: none; }
+
+        .proxy-config-text { flex: 1; min-width: 200px; }
+        .proxy-config-text h3 { font-size: 15px; color: var(--accent); margin-bottom: 4px; }
+        .proxy-config-text p { font-size: 13px; color: var(--text2); }
+
+        .proxy-inp-wrap { display: flex; gap: 8px; flex: 2; min-width: 280px; }
+
+        .proxy-inp {
+            flex: 1;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 9px 14px;
+            color: #fff; font-size: 13px; outline: none;
+        }
+
+        .proxy-inp:focus { border-color: var(--accent); }
+        .proxy-inp::placeholder { color: var(--muted); }
+
+        .proxy-save-btn {
+            background: var(--grad);
+            border: none; border-radius: 8px;
+            padding: 9px 18px;
+            color: #fff; font-size: 13px; font-weight: 700;
+            cursor: pointer; white-space: nowrap;
+        }
+
+        .proxy-save-btn:hover { box-shadow: 0 4px 15px var(--glow); }
+
+        .proxy-status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: 600;
-            transition: all 0.2s;
         }
 
-        .search-btn:hover {
-            box-shadow: 0 0 15px var(--accent-glow);
-            transform: translateY(-50%) scale(1.05);
-        }
+        .proxy-status-badge.ok { background: rgba(74,222,128,0.15); color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
+        .proxy-status-badge.fail { background: rgba(229,9,20,0.15); color: var(--accent); border: 1px solid var(--glow); }
+        .proxy-status-badge.testing { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
 
-        .main-content {
-            padding-top: 64px;
-            min-height: 100vh;
-        }
+        /* MAIN */
+        .main { padding-top: 60px; }
 
+        /* HERO */
         .hero {
-            background: linear-gradient(135deg, #0a0a0f 0%, #1a0a1e 50%, #0a0a0f 100%);
-            padding: 80px 24px 60px;
+            padding: 70px 24px 50px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
+            background: radial-gradient(ellipse at center, rgba(229,9,20,0.07) 0%, transparent 70%);
         }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: radial-gradient(circle at 50% 50%, rgba(229,9,20,0.08) 0%, transparent 60%);
-            animation: pulse 6s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
-
-        .hero-content { position: relative; z-index: 1; }
 
         .hero h1 {
-            font-size: clamp(32px, 6vw, 64px);
-            font-weight: 900;
-            margin-bottom: 16px;
-            line-height: 1.1;
+            font-size: clamp(28px, 5vw, 60px);
+            font-weight: 900; line-height: 1.1;
+            margin-bottom: 12px;
         }
 
-        .hero h1 .highlight {
-            background: var(--gradient);
+        .hero h1 span {
+            background: var(--grad);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .hero p {
-            color: var(--text-secondary);
-            font-size: 18px;
-            margin-bottom: 40px;
-        }
+        .hero p { color: var(--text2); font-size: 17px; margin-bottom: 36px; }
 
         .hero-search {
-            max-width: 500px;
-            margin: 0 auto;
-            display: flex;
-            gap: 12px;
+            max-width: 480px; margin: 0 auto;
+            display: flex; gap: 10px;
         }
 
         .hero-search input {
             flex: 1;
-            background: rgba(255,255,255,0.08);
-            border: 2px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.07);
+            border: 2px solid rgba(255,255,255,0.12);
             border-radius: 50px;
-            padding: 14px 24px;
-            color: white;
-            font-size: 16px;
-            outline: none;
+            padding: 13px 22px;
+            color: #fff; font-size: 15px; outline: none;
             transition: all 0.3s;
         }
 
         .hero-search input:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 25px var(--accent-glow);
+            box-shadow: 0 0 20px var(--glow);
         }
 
         .hero-search button {
-            background: var(--gradient);
-            border: none;
-            border-radius: 50px;
-            padding: 14px 30px;
-            color: white;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            white-space: nowrap;
+            background: var(--grad);
+            border: none; border-radius: 50px;
+            padding: 13px 26px;
+            color: #fff; font-size: 15px; font-weight: 700;
+            cursor: pointer; transition: all 0.3s; white-space: nowrap;
         }
 
         .hero-search button:hover {
-            box-shadow: 0 8px 25px var(--accent-glow);
+            box-shadow: 0 6px 20px var(--glow);
             transform: translateY(-2px);
         }
 
-        .section { padding: 40px 24px; }
+        /* SECTION */
+        .section { padding: 32px 24px; }
 
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 24px;
+        .sec-head {
+            display: flex; align-items: center;
+            gap: 12px; margin-bottom: 20px;
         }
 
-        .section-title { font-size: 22px; font-weight: 700; }
+        .sec-title { font-size: 20px; font-weight: 700; white-space: nowrap; }
+        .sec-line { flex: 1; height: 1px; background: var(--border); }
 
-        .section-line {
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
-
-        #search-page {
-            display: none;
-            padding: 24px;
-        }
-
-        .search-header {
-            margin-bottom: 28px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .search-header h2 {
-            font-size: 20px;
-            color: var(--text-secondary);
-        }
-
-        .search-header h2 span {
-            color: white;
-            font-weight: 700;
-        }
-
-        .results-grid {
+        /* GRID */
+        .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 20px;
-        }
-
-        .movie-card {
-            background: var(--bg-card);
-            border-radius: 12px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid var(--border);
-            position: relative;
-        }
-
-        .movie-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            border-color: var(--accent);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 20px var(--accent-glow);
-        }
-
-        .card-poster {
-            width: 100%;
-            aspect-ratio: 2/3;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .card-poster img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.4s ease;
-        }
-
-        .movie-card:hover .card-poster img { transform: scale(1.08); }
-
-        .card-poster-placeholder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            color: var(--text-muted);
-            padding: 20px;
-            text-align: center;
-        }
-
-        .poster-icon { font-size: 48px; opacity: 0.5; }
-
-        .card-badge {
-            position: absolute;
-            top: 8px; right: 8px;
-            background: var(--accent);
-            color: white;
-            font-size: 10px;
-            font-weight: 700;
-            padding: 3px 8px;
-            border-radius: 4px;
-        }
-
-        .card-type-badge {
-            position: absolute;
-            top: 8px; left: 8px;
-            background: rgba(0,0,0,0.7);
-            color: #fff;
-            font-size: 10px;
-            font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 4px;
-            backdrop-filter: blur(4px);
-        }
-
-        .play-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .movie-card:hover .play-overlay { opacity: 1; }
-
-        .play-icon {
-            width: 50px;
-            height: 50px;
-            background: var(--gradient);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
-
-        .card-info { padding: 12px; }
-
-        .card-title {
-            font-size: 13px;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 4px;
-        }
-
-        .card-meta {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        .card-year { color: var(--text-secondary); }
-        .card-rating { color: #ffd700; font-weight: 600; }
-
-        #player-page { display: none; }
-
-        .player-layout {
-            display: grid;
-            grid-template-columns: 1fr 340px;
-            gap: 0;
-            min-height: calc(100vh - 64px);
-        }
-
-        .player-main {
-            padding: 20px;
-            overflow-y: auto;
-        }
-
-        .player-sidebar {
-            background: var(--bg-secondary);
-            border-left: 1px solid var(--border);
-            overflow-y: auto;
-            max-height: calc(100vh - 64px);
-            position: sticky;
-            top: 64px;
-        }
-
-        .video-wrapper {
-            background: #000;
-            border-radius: 16px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.8);
-            border: 1px solid var(--border);
-            margin-bottom: 20px;
-        }
-
-        .video-container {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16/9;
-        }
-
-        .video-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-
-        .video-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #0d0d1a, #1a0d2e);
-            color: var(--text-secondary);
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             gap: 16px;
         }
 
-        .video-placeholder .big-icon { font-size: 80px; opacity: 0.4; }
-
-        .title-area { margin-bottom: 20px; }
-
-        .title-area h1 {
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 8px;
-            line-height: 1.2;
-        }
-
-        .title-area .current-ep {
-            font-size: 16px;
-            color: var(--accent);
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .meta-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .meta-badge {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 6px;
-            padding: 4px 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .meta-badge.rating { color: #ffd700; border-color: rgba(255,215,0,0.3); background: rgba(255,215,0,0.08); }
-        .meta-badge.hd { color: #4ade80; border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.08); }
-        .meta-badge.age { color: var(--accent); border-color: var(--accent-glow); background: rgba(229,9,20,0.08); }
-
-        .description {
-            color: var(--text-secondary);
-            line-height: 1.7;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-
-        .controls-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 20px;
-            align-items: center;
-            background: var(--bg-card);
-            padding: 14px 16px;
-            border-radius: 12px;
+        /* CARD */
+        .card {
+            background: var(--card);
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
             border: 1px solid var(--border);
+            animation: fadeUp 0.3s ease forwards;
         }
 
-        .controls-bar select {
-            background: var(--bg-secondary);
+        .card:hover {
+            transform: translateY(-6px) scale(1.02);
+            border-color: var(--accent);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5), 0 0 15px var(--glow);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-img {
+            width: 100%; aspect-ratio: 2/3;
+            background: linear-gradient(135deg, #1a1a2e, #0f0f1e);
+            position: relative; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .card-img img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.4s;
+        }
+
+        .card:hover .card-img img { transform: scale(1.06); }
+
+        .card-no-img {
+            display: flex; flex-direction: column;
+            align-items: center; gap: 8px;
+            color: var(--muted); padding: 16px;
+            text-align: center; font-size: 12px;
+        }
+
+        .card-no-img .icon { font-size: 36px; opacity: 0.4; }
+
+        .card-hd {
+            position: absolute; top: 6px; right: 6px;
+            background: var(--accent); color: #fff;
+            font-size: 9px; font-weight: 700;
+            padding: 2px 6px; border-radius: 3px;
+        }
+
+        .card-type {
+            position: absolute; top: 6px; left: 6px;
+            background: rgba(0,0,0,0.75);
+            color: #fff; font-size: 9px; font-weight: 600;
+            padding: 2px 6px; border-radius: 3px;
+            backdrop-filter: blur(4px);
+        }
+
+        .card-play {
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0.45);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.3s;
+        }
+
+        .card:hover .card-play { opacity: 1; }
+
+        .play-circle {
+            width: 46px; height: 46px;
+            background: var(--grad); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 0 20px var(--glow);
+        }
+
+        .card-body { padding: 10px; }
+
+        .card-title {
+            font-size: 12px; font-weight: 600;
+            white-space: nowrap; overflow: hidden;
+            text-overflow: ellipsis; margin-bottom: 4px;
+        }
+
+        .card-meta {
+            display: flex; gap: 6px; align-items: center;
+            font-size: 11px; color: var(--muted);
+        }
+
+        .card-year { color: var(--text2); }
+        .card-rat { color: #ffd700; font-weight: 600; }
+
+        /* QUICK TAGS */
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+
+        .tag {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 7px 16px;
+            color: var(--text2); font-size: 13px;
+            cursor: pointer; transition: all 0.2s;
+        }
+
+        .tag:hover {
+            border-color: var(--accent); color: #fff;
+            background: rgba(229,9,20,0.08);
+        }
+
+        /* PAGES */
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* SEARCH PAGE */
+        .search-page-wrap { padding: 20px 24px; }
+
+        .search-top {
+            display: flex; align-items: center;
+            gap: 12px; margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.07);
             border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 8px 16px;
-            color: white;
-            font-size: 13px;
-            cursor: pointer;
-            outline: none;
+            padding: 8px 14px;
+            color: var(--text2); font-size: 13px;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .back-btn:hover { color: #fff; border-color: rgba(255,255,255,0.2); }
+
+        .search-info h2 { font-size: 17px; }
+        .search-info h2 span { color: var(--accent); }
+        .search-info p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+        /* NO RESULT */
+        .empty {
+            text-align: center; padding: 60px 20px;
+            color: var(--muted);
+        }
+
+        .empty .e-icon { font-size: 56px; margin-bottom: 12px; opacity: 0.4; }
+        .empty h3 { font-size: 18px; color: var(--text2); margin-bottom: 6px; }
+
+        /* PLAYER PAGE */
+        .player-wrap {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            min-height: calc(100vh - 60px);
+        }
+
+        .player-left { padding: 16px; overflow-y: auto; }
+
+        .player-right {
+            background: var(--bg2);
+            border-left: 1px solid var(--border);
+            max-height: calc(100vh - 60px);
+            overflow-y: auto;
+            position: sticky; top: 60px;
+        }
+
+        /* VIDEO */
+        .vid-box {
+            background: #000;
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+        }
+
+        .vid-inner {
+            position: relative; width: 100%;
+            aspect-ratio: 16/9;
+        }
+
+        .vid-inner iframe {
+            width: 100%; height: 100%;
+            border: none; display: block;
+        }
+
+        .vid-placeholder {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 12px; color: var(--text2);
+            background: linear-gradient(135deg, #0d0d1a, #130d20);
+        }
+
+        .vid-placeholder .vp-icon { font-size: 64px; opacity: 0.35; }
+
+        /* CONTROLS */
+        .ctrls {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex; flex-wrap: wrap;
+            gap: 12px; align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .ctrl-group {
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .ctrl-label {
+            font-size: 11px; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.5px;
+            font-weight: 600; white-space: nowrap;
+        }
+
+        .ctrl-select {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 7px 12px;
+            color: #fff; font-size: 13px;
+            cursor: pointer; outline: none;
             transition: border-color 0.2s;
         }
 
-        .controls-bar select:focus,
-        .controls-bar select:hover { border-color: var(--accent); }
+        .ctrl-select:hover, .ctrl-select:focus { border-color: var(--accent); }
 
-        .label-text {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .nav-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
+        .ctrl-btn {
+            padding: 7px 14px;
+            border-radius: 7px;
+            font-size: 13px; font-weight: 600;
+            cursor: pointer; border: none;
             transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            display: flex; align-items: center; gap: 6px;
         }
 
-        .btn-primary { background: var(--gradient); color: white; }
-        .btn-primary:hover { box-shadow: 0 8px 25px var(--accent-glow); transform: translateY(-2px); }
+        .cb-primary { background: var(--grad); color: #fff; }
+        .cb-primary:hover { box-shadow: 0 4px 15px var(--glow); }
+        .cb-sec { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid var(--border); }
+        .cb-sec:hover { background: rgba(255,255,255,0.12); }
+        .ctrl-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-        .btn-secondary { background: rgba(255,255,255,0.08); color: white; border: 1px solid var(--border); }
-        .btn-secondary:hover { background: rgba(255,255,255,0.12); }
-        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+        /* TITLE AREA */
+        .title-area { margin-bottom: 16px; }
+        .title-area h1 { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+
+        .ep-label {
+            font-size: 14px; color: var(--accent);
+            font-weight: 600; margin-bottom: 10px;
+        }
+
+        .badges {
+            display: flex; flex-wrap: wrap;
+            gap: 8px; margin-bottom: 12px;
+        }
+
+        .badge {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 5px;
+            padding: 3px 10px; font-size: 12px; font-weight: 600;
+        }
+
+        .badge.rat { color: #ffd700; border-color: rgba(255,215,0,0.25); background: rgba(255,215,0,0.07); }
+        .badge.hd { color: #4ade80; border-color: rgba(74,222,128,0.25); background: rgba(74,222,128,0.07); }
+        .badge.age { color: var(--accent); border-color: var(--glow); background: rgba(229,9,20,0.07); }
+
+        .genres {
+            display: flex; flex-wrap: wrap;
+            gap: 6px; margin-bottom: 12px;
+        }
+
+        .genre-pill {
+            background: rgba(229,9,20,0.09);
+            border: 1px solid rgba(229,9,20,0.25);
+            border-radius: 20px;
+            padding: 3px 12px; font-size: 12px;
+            color: var(--accent); font-weight: 500;
+        }
+
+        .desc {
+            color: var(--text2); line-height: 1.7;
+            font-size: 14px; margin-bottom: 16px;
+        }
+
+        .divider { height: 1px; background: var(--border); margin: 16px 0; }
 
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 20px;
+            gap: 14px; margin-bottom: 16px;
         }
 
         .info-item label {
             display: block;
-            font-size: 11px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-
-        .info-item span {
-            font-size: 13px;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-
-        .genre-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .genre-tag {
-            background: rgba(229,9,20,0.1);
-            border: 1px solid rgba(229,9,20,0.3);
-            border-radius: 20px;
-            padding: 4px 14px;
-            font-size: 12px;
-            color: var(--accent);
-            font-weight: 500;
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            background: var(--bg-secondary);
-            z-index: 10;
-        }
-
-        .sidebar-header h3 { font-size: 16px; font-weight: 700; }
-
-        .ep-count {
-            background: var(--accent);
-            color: white;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 10px;
-        }
-
-        .seasons-tabs {
-            padding: 12px 16px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 63px;
-            background: var(--bg-secondary);
-            z-index: 9;
-        }
-
-        .season-tab {
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--text-secondary);
-            transition: all 0.2s;
-        }
-
-        .season-tab:hover { border-color: var(--accent); color: white; }
-        .season-tab.active { background: var(--gradient); border-color: transparent; color: white; }
-
-        .episode-list { padding: 12px; }
-
-        .episode-item {
-            display: flex;
-            gap: 12px;
-            padding: 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid transparent;
-            margin-bottom: 4px;
-        }
-
-        .episode-item:hover { background: var(--bg-card); border-color: var(--border); }
-        .episode-item.active { background: rgba(229,9,20,0.1); border-color: rgba(229,9,20,0.4); }
-
-        .ep-number {
-            min-width: 36px;
-            height: 36px;
-            background: var(--bg-card);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-muted);
-            flex-shrink: 0;
-        }
-
-        .episode-item.active .ep-number { background: var(--gradient); color: white; }
-
-        .ep-info { flex: 1; min-width: 0; }
-
-        .ep-title {
-            font-size: 13px;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 10px; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.5px;
             margin-bottom: 3px;
         }
 
-        .ep-meta {
-            font-size: 11px;
-            color: var(--text-muted);
-            display: flex;
-            gap: 8px;
+        .info-item span { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+        /* SIDEBAR */
+        .sb-head {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center;
+            justify-content: space-between;
+            position: sticky; top: 0;
+            background: var(--bg2); z-index: 5;
         }
 
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(10,10,15,0.9);
+        .sb-head h3 { font-size: 15px; font-weight: 700; }
+
+        .ep-cnt {
+            background: var(--accent); color: #fff;
+            font-size: 11px; font-weight: 700;
+            padding: 2px 8px; border-radius: 10px;
+        }
+
+        .s-tabs {
+            padding: 10px 14px;
+            display: flex; flex-wrap: wrap; gap: 6px;
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 55px;
+            background: var(--bg2); z-index: 4;
+        }
+
+        .s-tab {
+            padding: 5px 14px; border-radius: 20px;
+            font-size: 12px; font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: transparent; color: var(--text2);
+            transition: all 0.2s;
+        }
+
+        .s-tab:hover { border-color: var(--accent); color: #fff; }
+        .s-tab.active { background: var(--grad); border-color: transparent; color: #fff; }
+
+        .ep-list { padding: 10px; }
+
+        .ep-item {
+            display: flex; gap: 10px;
+            padding: 10px; border-radius: 9px;
+            cursor: pointer; transition: all 0.2s;
+            border: 1px solid transparent;
+            margin-bottom: 3px;
+        }
+
+        .ep-item:hover { background: var(--card); border-color: var(--border); }
+        .ep-item.active { background: rgba(229,9,20,0.09); border-color: rgba(229,9,20,0.35); }
+
+        .ep-num {
+            min-width: 33px; height: 33px;
+            background: var(--card); border-radius: 7px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700;
+            color: var(--muted); flex-shrink: 0;
+        }
+
+        .ep-item.active .ep-num { background: var(--grad); color: #fff; }
+
+        .ep-info { flex: 1; min-width: 0; }
+
+        .ep-name {
+            font-size: 12px; font-weight: 600;
+            white-space: nowrap; overflow: hidden;
+            text-overflow: ellipsis; margin-bottom: 2px;
+        }
+
+        .ep-sub {
+            font-size: 11px; color: var(--muted);
+            display: flex; gap: 6px;
+        }
+
+        .load-more {
+            display: block; width: 100%;
+            padding: 12px; text-align: center;
+            background: rgba(229,9,20,0.08);
+            border: 1px solid rgba(229,9,20,0.25);
+            border-radius: 9px;
+            color: var(--accent); font-size: 13px;
+            font-weight: 600; cursor: pointer;
+            margin-top: 6px; transition: all 0.2s;
+        }
+
+        .load-more:hover { background: rgba(229,9,20,0.16); }
+
+        /* SUGGEST */
+        .sug-section { margin-top: 20px; }
+
+        .sug-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 14px;
+        }
+
+        /* LOADING */
+        .loader {
+            display: none; position: fixed; inset: 0;
+            background: rgba(10,10,15,0.92);
             z-index: 9999;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            backdrop-filter: blur(8px);
+            align-items: center; justify-content: center;
+            gap: 16px; backdrop-filter: blur(6px);
         }
 
-        .loading-overlay.show { display: flex; }
+        .loader.on { display: flex; }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(255,255,255,0.1);
+        .spin {
+            width: 46px; height: 46px;
+            border: 3px solid rgba(255,255,255,0.08);
             border-top-color: var(--accent);
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            animation: spin 0.7s linear infinite;
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .loading-text { color: var(--text-secondary); font-size: 15px; }
+        .load-txt { color: var(--text2); font-size: 14px; }
+        .load-sub { color: var(--muted); font-size: 12px; }
 
-        .proxy-status {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: -10px;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 60px 24px;
-            color: var(--text-muted);
-        }
-
-        .no-results .big-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
-        .no-results h3 { font-size: 20px; color: var(--text-secondary); margin-bottom: 8px; }
-
+        /* TOAST */
         .toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: var(--bg-card);
+            position: fixed; bottom: 20px; right: 20px;
+            background: var(--card);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 14px 20px;
-            font-size: 14px;
-            z-index: 99999;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s;
-            max-width: 320px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .toast.show { transform: translateY(0); opacity: 1; }
-        .toast.success { border-color: #4ade80; }
-        .toast.error { border-color: var(--accent); }
-        .toast.info { border-color: #60a5fa; }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 14px;
-            padding: 8px 0;
-            margin-bottom: 16px;
-            transition: color 0.2s;
-            background: none;
-            border: none;
-        }
-
-        .back-btn:hover { color: white; }
-
-        .divider { height: 1px; background: var(--border); margin: 20px 0; }
-
-        .suggest-section { margin-top: 20px; }
-
-        .suggest-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 16px;
-        }
-
-        .featured-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 20px;
-        }
-
-        .load-more-btn {
-            display: block;
-            width: 100%;
-            padding: 14px;
-            text-align: center;
-            background: rgba(229,9,20,0.1);
-            border: 1px solid rgba(229,9,20,0.3);
             border-radius: 10px;
-            color: var(--accent);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 8px;
-            transition: all 0.2s;
+            padding: 12px 18px; font-size: 13px;
+            z-index: 99999;
+            transform: translateY(80px); opacity: 0;
+            transition: all 0.3s; max-width: 300px;
         }
 
-        .load-more-btn:hover { background: rgba(229,9,20,0.2); }
+        .toast.on { transform: translateY(0); opacity: 1; }
+        .toast.ok { border-color: #4ade80; }
+        .toast.err { border-color: var(--accent); }
+        .toast.inf { border-color: #60a5fa; }
 
-        /* Proxy indicator */
-        .proxy-indicator {
-            position: fixed;
-            bottom: 24px;
-            left: 24px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 6px 12px;
-            font-size: 11px;
-            color: var(--text-muted);
-            z-index: 100;
-            display: none;
-        }
-
-        .proxy-indicator.show { display: block; }
-        .proxy-indicator .dot {
-            display: inline-block;
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            background: #4ade80;
-            margin-right: 6px;
-            animation: blink 1.5s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(16px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .fade-in { animation: fadeIn 0.4s ease forwards; }
-        .movie-card { animation: fadeIn 0.3s ease forwards; }
-        .page { animation: fadeIn 0.3s ease; }
-
-        @media (max-width: 900px) {
-            .player-layout { grid-template-columns: 1fr; }
-            .player-sidebar {
+        /* RESPONSIVE */
+        @media(max-width: 850px) {
+            .player-wrap { grid-template-columns: 1fr; }
+            .player-right {
                 position: static;
-                max-height: 450px;
+                max-height: 400px;
                 border-left: none;
                 border-top: 1px solid var(--border);
             }
         }
 
-        @media (max-width: 600px) {
-            .navbar { padding: 0 14px; gap: 10px; }
+        @media(max-width: 550px) {
+            .nav { padding: 0 12px; gap: 10px; }
             .logo { font-size: 18px; }
-            .hero { padding: 50px 16px 40px; }
+            .hero { padding: 50px 14px 36px; }
             .hero-search { flex-direction: column; }
-            .results-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
-            .player-main { padding: 12px; }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+            .player-left { padding: 10px; }
             .info-grid { grid-template-columns: 1fr; }
-            .title-area h1 { font-size: 22px; }
+            .proxy-config { flex-direction: column; }
+            .proxy-inp-wrap { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 
-<!-- LOADING -->
-<div class="loading-overlay" id="loadingOverlay">
-    <div class="spinner"></div>
-    <div class="loading-text" id="loadingText">Loading...</div>
-    <div class="proxy-status" id="proxyStatus"></div>
+<!-- LOADER -->
+<div class="loader" id="loader">
+    <div class="spin"></div>
+    <div class="load-txt" id="loadTxt">Loading...</div>
+    <div class="load-sub" id="loadSub"></div>
 </div>
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- PROXY INDICATOR -->
-<div class="proxy-indicator" id="proxyIndicator">
-    <span class="dot"></span>
-    <span id="proxyIndicatorText">Connected</span>
-</div>
-
 <!-- NAVBAR -->
-<nav class="navbar">
-    <div class="logo" onclick="goHome()">Stream<span>Flix</span></div>
-    <div class="search-container">
-        <input type="text" class="search-box" id="navSearch" placeholder="Search movies, TV shows..." />
-        <button class="search-btn" onclick="doSearch()">🔍 Search</button>
+<nav class="nav">
+    <div class="logo" onclick="goHome()">Stream<span style="font-weight:300">Flix</span></div>
+    <div class="search-wrap">
+        <input class="search-inp" id="navInp" placeholder="Search movies, shows..." />
+        <button class="search-btn" onclick="doSearch()">Search</button>
     </div>
 </nav>
 
-<!-- MAIN -->
-<div class="main-content">
+<div class="main">
 
-    <!-- HOME PAGE -->
-    <div id="home-page" class="page">
+    <!-- ═══════════════ HOME PAGE ═══════════════ -->
+    <div id="pg-home" class="page active">
+
+        <!-- PROXY CONFIG -->
+        <div class="proxy-config" id="proxyConfig">
+            <div class="proxy-config-text">
+                <h3>⚙️ CORS Proxy Setup Required</h3>
+                <p>Enter your Cloudflare Worker URL to fetch data<br>
+                <small style="color:var(--muted)">Free: workers.cloudflare.com → Create Worker → Paste code → Deploy</small></p>
+            </div>
+            <div class="proxy-inp-wrap">
+                <input class="proxy-inp" id="proxyInp"
+                    placeholder="https://your-worker.workers.dev" />
+                <button class="proxy-save-btn" onclick="saveProxy()">✓ Save & Test</button>
+            </div>
+            <div id="proxyBadge" class="proxy-status-badge testing" style="display:none"></div>
+        </div>
+
         <div class="hero">
-            <div class="hero-content">
-                <h1>Watch <span class="highlight">Free Movies</span><br>& TV Shows</h1>
-                <p>Stream thousands of titles instantly. No subscription needed.</p>
+            <div>
+                <h1>Watch <span>Free Movies</span><br>& TV Shows</h1>
+                <p>Stream thousands of titles. No subscription needed.</p>
                 <div class="hero-search">
-                    <input type="text" id="heroSearch" placeholder="Search for a movie or show..." onkeydown="if(event.key==='Enter')doHeroSearch()" />
-                    <button onclick="doHeroSearch()">🎬 Search</button>
+                    <input id="heroInp" placeholder="Search for a movie or show..."
+                        onkeydown="if(event.key==='Enter')heroSearch()" />
+                    <button onclick="heroSearch()">🎬 Search</button>
                 </div>
             </div>
         </div>
 
         <div class="section">
-            <div class="section-header">
-                <h2 class="section-title">🔥 Popular Right Now</h2>
-                <div class="section-line"></div>
+            <div class="sec-head">
+                <h2 class="sec-title">🔥 Popular</h2>
+                <div class="sec-line"></div>
             </div>
-            <div class="featured-list" id="featuredList">
-                <div style="color:var(--text-muted);font-size:14px;padding:20px 0;grid-column:1/-1;">
-                    🎬 Search for your favorite content above to get started!
+            <div class="grid" id="featGrid">
+                <div style="color:var(--muted);font-size:14px;grid-column:1/-1;padding:20px 0">
+                    👆 Set your proxy URL above, then search!
                 </div>
             </div>
         </div>
 
         <div class="section">
-            <div class="section-header">
-                <h2 class="section-title">💡 Quick Searches</h2>
-                <div class="section-line"></div>
+            <div class="sec-head">
+                <h2 class="sec-title">💡 Quick Search</h2>
+                <div class="sec-line"></div>
             </div>
-            <div style="display:flex;flex-wrap:wrap;gap:10px;" id="quickSearches"></div>
+            <div class="tags" id="quickTags"></div>
         </div>
     </div>
 
-    <!-- SEARCH PAGE -->
-    <div id="search-page" class="page" style="display:none;">
-        <div style="padding:24px;">
-            <div class="search-header">
-                <button class="back-btn" onclick="goHome()">← Back to Home</button>
-                <h2>Results for: <span id="searchQueryLabel"></span></h2>
-                <div style="color:var(--text-muted);font-size:13px;margin-top:6px;" id="resultCount"></div>
+    <!-- ═══════════════ SEARCH PAGE ═══════════════ -->
+    <div id="pg-search" class="page">
+        <div class="search-page-wrap">
+            <div class="search-top">
+                <button class="back-btn" onclick="goHome()">← Back</button>
+                <div class="search-info">
+                    <h2>Results for: <span id="sqLabel"></span></h2>
+                    <p id="sqCount"></p>
+                </div>
             </div>
-            <div class="results-grid" id="resultsGrid"></div>
-            <div id="noResults" class="no-results" style="display:none;">
-                <div class="big-icon">🎭</div>
+            <div class="grid" id="searchGrid"></div>
+            <div id="searchEmpty" class="empty" style="display:none">
+                <div class="e-icon">🎭</div>
                 <h3>No results found</h3>
-                <p>Try different keywords or check your spelling</p>
+                <p>Try different keywords</p>
             </div>
         </div>
     </div>
 
-    <!-- PLAYER PAGE -->
-    <div id="player-page" class="page" style="display:none;">
-        <div class="player-layout">
-            <div class="player-main">
-                <button class="back-btn" onclick="goBack()">← Back</button>
+    <!-- ═══════════════ PLAYER PAGE ═══════════════ -->
+    <div id="pg-player" class="page">
+        <div class="player-wrap">
 
-                <div class="video-wrapper">
-                    <div class="video-container" id="videoContainer">
-                        <div class="video-placeholder">
-                            <div class="big-icon">▶️</div>
-                            <div>Select an episode to start watching</div>
+            <!-- LEFT -->
+            <div class="player-left">
+                <button class="back-btn" onclick="goBack()" style="margin-bottom:14px">← Back</button>
+
+                <!-- VIDEO -->
+                <div class="vid-box">
+                    <div class="vid-inner" id="vidInner">
+                        <div class="vid-placeholder">
+                            <div class="vp-icon">▶️</div>
+                            <div>Select episode to play</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- CONTROLS -->
-                <div class="controls-bar" id="controlsBar">
-                    <div class="control-group">
-                        <span class="label-text">🌍 Language:</span>
-                        <select id="langSelect" onchange="changeLanguage()">
-                            <option value="eng">English</option>
-                        </select>
+                <div class="ctrls">
+                    <div class="ctrl-group">
+                        <span class="ctrl-label">🌍 Lang</span>
+                        <select class="ctrl-select" id="langSel" onchange="changeLang()"></select>
                     </div>
-                    <div class="control-group">
-                        <span class="label-text">📺 Season:</span>
-                        <select id="seasonSelectMain" onchange="changeSeason(this.value)"></select>
+                    <div class="ctrl-group">
+                        <span class="ctrl-label">📺 Season</span>
+                        <select class="ctrl-select" id="seasonSel" onchange="changeSeason(this.value)"></select>
                     </div>
-                    <div class="control-group" style="margin-left:auto;">
-                        <button class="btn btn-secondary" style="padding:6px 12px;font-size:12px;" onclick="reloadPlayer()">🔄 Reload</button>
+                    <div style="margin-left:auto;display:flex;gap:8px;">
+                        <button class="ctrl-btn cb-sec" id="prevBtn" onclick="prevEp()" disabled>⬅ Prev</button>
+                        <button class="ctrl-btn cb-primary" id="nextBtn" onclick="nextEp()">Next ➡</button>
+                        <button class="ctrl-btn cb-sec" onclick="reloadVid()" title="Reload">🔄</button>
                     </div>
                 </div>
 
-                <!-- NAV -->
-                <div class="nav-buttons" id="navButtons" style="display:none;">
-                    <button class="btn btn-secondary" id="prevEpBtn" onclick="prevEpisode()" disabled>⬅ Previous</button>
-                    <button class="btn btn-primary" id="nextEpBtn" onclick="nextEpisode()">Next ➡</button>
-                </div>
-
+                <!-- INFO -->
                 <div class="title-area">
-                    <h1 id="playerTitle">-</h1>
-                    <div class="current-ep" id="currentEpLabel" style="display:none;"></div>
-                    <div class="meta-row" id="metaRow"></div>
-                    <div class="genre-tags" id="genreTags"></div>
-                    <p class="description" id="playerDesc">-</p>
+                    <h1 id="pTitle"></h1>
+                    <div class="ep-label" id="epLabel" style="display:none"></div>
+                    <div class="badges" id="pBadges"></div>
+                    <div class="genres" id="pGenres"></div>
+                    <p class="desc" id="pDesc"></p>
                 </div>
 
                 <div class="divider"></div>
+                <div class="info-grid" id="pInfo"></div>
 
-                <div class="info-grid" id="infoGrid"></div>
-
-                <div class="suggest-section" id="suggestSection" style="display:none;">
-                    <div class="section-header" style="margin-bottom:16px;">
-                        <h2 class="section-title">You Might Also Like</h2>
-                        <div class="section-line"></div>
+                <!-- SUGGESTIONS -->
+                <div class="sug-section" id="sugSec" style="display:none">
+                    <div class="sec-head" style="margin-bottom:14px">
+                        <h2 class="sec-title">You Might Like</h2>
+                        <div class="sec-line"></div>
                     </div>
-                    <div class="suggest-grid" id="suggestGrid"></div>
+                    <div class="sug-grid" id="sugGrid"></div>
                 </div>
             </div>
 
-            <!-- SIDEBAR -->
-            <div class="player-sidebar" id="playerSidebar" style="display:none;">
-                <div class="sidebar-header">
+            <!-- RIGHT SIDEBAR -->
+            <div class="player-right" id="sidebar" style="display:none">
+                <div class="sb-head">
                     <h3>📋 Episodes</h3>
-                    <span class="ep-count" id="epCount">0</span>
+                    <span class="ep-cnt" id="epCnt">0</span>
                 </div>
-                <div class="seasons-tabs" id="seasonsTabs"></div>
-                <div class="episode-list" id="episodeList"></div>
-                <div id="loadMoreEps" style="padding:0 12px 12px;"></div>
+                <div class="s-tabs" id="sTabs"></div>
+                <div class="ep-list" id="epList"></div>
+                <div id="loadMoreWrap" style="padding:0 10px 10px"></div>
             </div>
+
         </div>
     </div>
 
 </div>
 
 <script>
-// ============================================================
+// ════════════════════════════════════════════
 // CONFIG
-// ============================================================
-const API_BASE = 'https://net52.cc/pv';
+// ════════════════════════════════════════════
+const API = 'https://net52.cc/pv';
 
-// CORS Proxies - multiple fallbacks
-const PROXIES = [
-    // allorigins - most reliable, free, no limit
-    (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-    // thingproxy - good fallback
-    (url) => `https://thingproxy.freeboard.io/fetch/${url}`,
-    // htmldriven
-    (url) => `https://yacdn.org/proxy/${url}`,
-    // corsproxy.io - limited
-    (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+// State
+let PROXY_URL = localStorage.getItem('sf_proxy') || '';
+let curData = null;
+let curEpId = null;
+let curEpIdx = 0;
+let curEps = [];
+let curSeasonId = null;
+let curLang = 'eng';
+let curMediaId = null;
+let prevPg = 'home';
+
+const QUICK = [
+    'Mr Robot','Breaking Bad','Inception','Dark',
+    'Stranger Things','The Batman','Interstellar',
+    'Money Heist','Peaky Blinders','Game of Thrones',
+    'Avatar','Oppenheimer'
 ];
 
-let activeProxyIndex = 0;
-let currentData = null;
-let currentEpisodeId = null;
-let currentEpisodeIndex = 0;
-let currentEpisodes = [];
-let currentSeasonId = null;
-let currentLang = 'eng';
-let currentMediaId = null;
-let prevPage = 'home';
-
-const quickSearchTerms = [
-    'Mr Robot', 'Breaking Bad', 'Inception', 'The Batman',
-    'Interstellar', 'Dark', 'Stranger Things', 'Avatar',
-    'Avengers', 'Game of Thrones', 'Peaky Blinders', 'Money Heist'
-];
-
-// ============================================================
-// FETCH WITH PROXY FALLBACK
-// ============================================================
-async function fetchWithProxy(url) {
-    // Try direct (works if CORS allowed)
-    try {
-        const res = await fetch(url, {
-            method: 'GET',
-            headers: { 'Accept': 'application/json' },
-            signal: AbortSignal.timeout(5000)
-        });
-        if (res.ok) {
-            const data = await res.json();
-            if (data && !data.error) {
-                updateProxyIndicator('Direct', true);
-                return data;
-            }
-        }
-    } catch(e) {}
-
-    // Try each proxy
-    for (let i = 0; i < PROXIES.length; i++) {
-        try {
-            updateProxyStatus(`Trying proxy ${i + 1}/${PROXIES.length}...`);
-            const proxyUrl = PROXIES[i](url);
-            
-            const res = await fetch(proxyUrl, {
-                signal: AbortSignal.timeout(8000)
-            });
-
-            if (!res.ok) continue;
-
-            const raw = await res.text();
-            let data;
-
-            // allorigins wraps in {contents: "..."}
-            if (raw.includes('"contents"')) {
-                const wrapper = JSON.parse(raw);
-                if (wrapper.contents) {
-                    data = JSON.parse(wrapper.contents);
-                }
-            } else {
-                data = JSON.parse(raw);
-            }
-
-            if (data && !data.error) {
-                activeProxyIndex = i;
-                updateProxyIndicator(`Proxy ${i + 1}`, true);
-                return data;
-            }
-        } catch(e) {
-            console.warn(`Proxy ${i + 1} failed:`, e.message);
-        }
+// ════════════════════════════════════════════
+// FETCH
+// ════════════════════════════════════════════
+async function apiFetch(url) {
+    if (!PROXY_URL) {
+        throw new Error('No proxy configured! Please set your Cloudflare Worker URL first.');
     }
 
-    throw new Error('All proxies failed. Please try again.');
-}
+    const proxyUrl = `${PROXY_URL.replace(/\/$/, '')}?url=${encodeURIComponent(url)}`;
 
-function updateProxyStatus(msg) {
-    const el = document.getElementById('proxyStatus');
-    if (el) el.textContent = msg;
-}
+    const res = await fetch(proxyUrl, {
+        signal: AbortSignal.timeout(12000)
+    });
 
-function updateProxyIndicator(name, success) {
-    const el = document.getElementById('proxyIndicator');
-    const txt = document.getElementById('proxyIndicatorText');
-    if (el && txt) {
-        txt.textContent = name;
-        el.style.borderColor = success ? 'rgba(74,222,128,0.4)' : 'rgba(229,9,20,0.4)';
-        el.classList.add('show');
-        setTimeout(() => el.classList.remove('show'), 4000);
+    if (!res.ok) {
+        throw new Error(`Proxy error: ${res.status} ${res.statusText}`);
     }
+
+    const text = await res.text();
+
+    // Handle allorigins-style wrapper
+    if (text.trim().startsWith('{"contents"')) {
+        const w = JSON.parse(text);
+        return JSON.parse(w.contents);
+    }
+
+    const data = JSON.parse(text);
+
+    if (data && data.error) {
+        throw new Error(data.error);
+    }
+
+    return data;
 }
 
-// ============================================================
-// INIT
-// ============================================================
+// ════════════════════════════════════════════
+// PROXY SETUP
+// ════════════════════════════════════════════
 function init() {
-    renderQuickSearches();
-    loadFeatured();
+    renderQuickTags();
+    setupProxyUI();
+    bindKeys();
+}
 
-    document.getElementById('navSearch').addEventListener('keydown', e => {
+function setupProxyUI() {
+    const inp = document.getElementById('proxyInp');
+    inp.value = PROXY_URL;
+
+    if (PROXY_URL) {
+        document.getElementById('proxyConfig').classList.add('hidden');
+        loadFeatured();
+    }
+}
+
+async function saveProxy() {
+    const val = document.getElementById('proxyInp').value.trim();
+    if (!val) return showToast('Enter your Worker URL first', 'err');
+
+    PROXY_URL = val;
+    localStorage.setItem('sf_proxy', PROXY_URL);
+
+    const badge = document.getElementById('proxyBadge');
+    badge.style.display = '';
+    badge.className = 'proxy-status-badge testing';
+    badge.textContent = '⏳ Testing...';
+
+    try {
+        const testUrl = `${API}/search.php?s=test`;
+        await apiFetch(testUrl);
+        badge.className = 'proxy-status-badge ok';
+        badge.textContent = '✅ Connected!';
+        showToast('Proxy working! Loading content...', 'ok');
+
+        setTimeout(() => {
+            document.getElementById('proxyConfig').classList.add('hidden');
+            loadFeatured();
+        }, 1200);
+    } catch(e) {
+        badge.className = 'proxy-status-badge fail';
+        badge.textContent = '❌ Failed';
+        showToast('Proxy failed: ' + e.message, 'err');
+        PROXY_URL = '';
+        localStorage.removeItem('sf_proxy');
+    }
+}
+
+function bindKeys() {
+    document.getElementById('navInp').addEventListener('keydown', e => {
         if (e.key === 'Enter') doSearch();
     });
-
-    document.getElementById('heroSearch').addEventListener('keydown', e => {
-        if (e.key === 'Enter') doHeroSearch();
+    document.getElementById('heroInp').addEventListener('keydown', e => {
+        if (e.key === 'Enter') heroSearch();
+    });
+    document.getElementById('proxyInp').addEventListener('keydown', e => {
+        if (e.key === 'Enter') saveProxy();
     });
 }
 
-function renderQuickSearches() {
-    const container = document.getElementById('quickSearches');
-    container.innerHTML = quickSearchTerms.map(q => `
-        <button onclick="quickSearch('${q}')" style="
-            background:rgba(255,255,255,0.05);
-            border:1px solid rgba(255,255,255,0.1);
-            border-radius:20px;
-            padding:8px 18px;
-            color:var(--text-secondary);
-            font-size:13px;
-            cursor:pointer;
-            transition:all 0.2s;
-        "
-        onmouseover="this.style.borderColor='var(--accent)';this.style.color='white'"
-        onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='var(--text-secondary)'"
-        >${q}</button>
+function renderQuickTags() {
+    document.getElementById('quickTags').innerHTML = QUICK.map(q => `
+        <div class="tag" onclick="quickSearch('${q}')">${q}</div>
     `).join('');
 }
 
 async function loadFeatured() {
     try {
-        const data = await fetchWithProxy(`${API_BASE}/search.php?s=breaking+bad`);
-        const results = Array.isArray(data) ? data : (data.results || []);
+        const data = await apiFetch(`${API}/search.php?s=breaking+bad`);
+        const results = Array.isArray(data) ? data : [];
         if (results.length > 0) {
-            document.getElementById('featuredList').innerHTML =
-                results.slice(0, 10).map(item => renderCard(item)).join('');
+            document.getElementById('featGrid').innerHTML =
+                results.slice(0, 12).map(renderCard).join('');
         }
     } catch(e) {
-        console.warn('Featured load failed');
+        console.warn('Featured failed:', e.message);
     }
 }
 
-// ============================================================
+// ════════════════════════════════════════════
 // SEARCH
-// ============================================================
-function quickSearch(q) {
-    document.getElementById('navSearch').value = q;
-    document.getElementById('heroSearch').value = q;
-    performSearch(q);
-}
-
-function doHeroSearch() {
-    const q = document.getElementById('heroSearch').value.trim();
-    if (!q) return showToast('Please enter something to search', 'error');
-    document.getElementById('navSearch').value = q;
-    performSearch(q);
+// ════════════════════════════════════════════
+function heroSearch() {
+    const q = document.getElementById('heroInp').value.trim();
+    if (!q) return;
+    document.getElementById('navInp').value = q;
+    search(q);
 }
 
 function doSearch() {
-    const q = document.getElementById('navSearch').value.trim();
-    if (!q) return showToast('Please enter something to search', 'error');
-    document.getElementById('heroSearch').value = q;
-    performSearch(q);
+    const q = document.getElementById('navInp').value.trim();
+    if (!q) return;
+    document.getElementById('heroInp').value = q;
+    search(q);
 }
 
-async function performSearch(query) {
-    if (!query) return;
-    showLoading('Searching for "' + query + '"...');
-    prevPage = 'home';
+function quickSearch(q) {
+    if (!PROXY_URL) {
+        showToast('Please set your proxy URL first!', 'err');
+        return;
+    }
+    document.getElementById('navInp').value = q;
+    document.getElementById('heroInp').value = q;
+    search(q);
+}
+
+async function search(query) {
+    if (!PROXY_URL) {
+        showToast('Set your Cloudflare Worker URL first!', 'err');
+        return;
+    }
+
+    showLoader(`Searching "${query}"...`);
+    prevPg = 'home';
 
     try {
-        const url = `${API_BASE}/search.php?s=${encodeURIComponent(query)}`;
-        const data = await fetchWithProxy(url);
-        hideLoading();
+        const data = await apiFetch(`${API}/search.php?s=${encodeURIComponent(query)}`);
+        const results = Array.isArray(data) ? data : [];
 
-        const results = Array.isArray(data) ? data : (data.results || data.data || []);
+        hideLoader();
+        showPage('search');
 
-        showPage('search-page');
-        document.getElementById('searchQueryLabel').textContent = `"${query}"`;
+        document.getElementById('sqLabel').textContent = `"${query}"`;
 
-        if (!results || results.length === 0) {
-            document.getElementById('resultsGrid').innerHTML = '';
-            document.getElementById('noResults').style.display = 'block';
-            document.getElementById('resultCount').textContent = 'No results found';
+        if (!results.length) {
+            document.getElementById('searchGrid').innerHTML = '';
+            document.getElementById('searchEmpty').style.display = 'block';
+            document.getElementById('sqCount').textContent = 'No results';
             return;
         }
 
-        document.getElementById('noResults').style.display = 'none';
-        document.getElementById('resultCount').textContent = `${results.length} result${results.length !== 1 ? 's' : ''} found`;
-        document.getElementById('resultsGrid').innerHTML = results.map(item => renderCard(item)).join('');
+        document.getElementById('searchEmpty').style.display = 'none';
+        document.getElementById('sqCount').textContent = `${results.length} results found`;
+        document.getElementById('searchGrid').innerHTML = results.map(renderCard).join('');
 
     } catch(e) {
-        hideLoading();
-        showToast('Search failed: ' + e.message, 'error');
+        hideLoader();
+        showToast('Search failed: ' + e.message, 'err');
     }
 }
 
-// ============================================================
+// ════════════════════════════════════════════
 // RENDER CARD
-// ============================================================
+// ════════════════════════════════════════════
 function renderCard(item) {
-    const isTV = item.type === 't' || (item.ep && item.ep !== '');
-    const poster = item.img || item.poster || item.image || '';
-    const rating = item.match || item.rating || '';
+    const tv = item.type === 't' || item.ep;
+    const poster = item.img || item.poster || '';
+    const rating = (item.match || '').replace('IMDb ', '');
+    const title = esc(item.title || item.t || 'Unknown');
     const year = item.year || '';
-    const title = item.title || item.t || item.name || 'Unknown';
     const id = item.id;
 
     return `
-    <div class="movie-card" onclick="loadMedia('${id}')">
-        <div class="card-poster">
+    <div class="card" onclick="loadMedia('${id}')">
+        <div class="card-img">
             ${poster
-                ? `<img src="${poster}" alt="${escHtml(title)}" loading="lazy"
-                        onerror="this.parentNode.querySelector('.card-poster-placeholder').style.display='flex';this.remove()">`
-                : ''
-            }
-            <div class="card-poster-placeholder" style="display:${poster ? 'none' : 'flex'}">
-                <div class="poster-icon">${isTV ? '📺' : '🎬'}</div>
-                <div style="font-size:11px;text-align:center;padding:0 8px">${escHtml(title)}</div>
+                ? `<img src="${poster}" alt="${title}" loading="lazy"
+                        onerror="this.parentNode.querySelector('.card-no-img').style.display='flex';this.remove()">`
+                : ''}
+            <div class="card-no-img" style="display:${poster?'none':'flex'}">
+                <div class="icon">${tv?'📺':'🎬'}</div>
+                <div>${title}</div>
             </div>
-            ${item.hdsd === 'HD' ? '<div class="card-badge">HD</div>' : ''}
-            <div class="card-type-badge">${isTV ? 'TV' : 'Movie'}</div>
-            <div class="play-overlay">
-                <div class="play-icon">▶</div>
-            </div>
+            ${item.hdsd==='HD' ? '<div class="card-hd">HD</div>' : ''}
+            <div class="card-type">${tv?'TV':'Movie'}</div>
+            <div class="card-play"><div class="play-circle">▶</div></div>
         </div>
-        <div class="card-info">
-            <div class="card-title" title="${escHtml(title)}">${escHtml(title)}</div>
+        <div class="card-body">
+            <div class="card-title" title="${title}">${title}</div>
             <div class="card-meta">
                 <span class="card-year">${year}</span>
-                ${rating ? `<span>•</span><span class="card-rating">⭐ ${rating.replace('IMDb ', '')}</span>` : ''}
+                ${rating ? `<span>•</span><span class="card-rat">⭐${rating}</span>` : ''}
             </div>
         </div>
     </div>`;
 }
 
-// ============================================================
+// ════════════════════════════════════════════
 // LOAD MEDIA
-// ============================================================
+// ════════════════════════════════════════════
 async function loadMedia(id, seasonId = null) {
-    showLoading('Loading content...');
-    currentMediaId = id;
+    showLoader('Loading...');
+    curMediaId = id;
 
     try {
         const useId = seasonId || id;
-        const tsParam = Math.floor(Date.now() / 1000);
-        const url = `${API_BASE}/post.php?id=${useId}&t=${tsParam}`;
-        const data = await fetchWithProxy(url);
+        const ts = Math.floor(Date.now() / 1000);
+        const data = await apiFetch(`${API}/post.php?id=${useId}&t=${ts}`);
 
-        if (!data || data.status === 'n') throw new Error('Content not available');
+        if (!data || data.status === 'n') throw new Error('Not available');
 
-        hideLoading();
-        currentData = data;
-        currentSeasonId = seasonId;
-        currentEpisodes = data.episodes || [];
+        hideLoader();
+        curData = data;
+        curSeasonId = seasonId;
+        curEps = data.episodes || [];
 
-        renderPlayerPage(data);
-        showPage('player-page');
-        prevPage = document.getElementById('search-page').style.display !== 'none' ? 'search-page' : 'home';
+        renderPlayer(data);
+        showPage('player');
+        prevPg = document.getElementById('pg-search').classList.contains('active')
+            ? 'search' : 'home';
 
-        // Auto play
-        if (currentEpisodes.length > 0) {
+        // Auto-play
+        if (curEps.length > 0) {
             const lastEp = data.last_ep
-                ? currentEpisodes.find(e => e.id === data.last_ep)
+                ? curEps.find(e => e.id === data.last_ep)
                 : null;
-            const startEp = lastEp || currentEpisodes[0];
-            const startIdx = currentEpisodes.indexOf(startEp);
-            setTimeout(() => playEpisode(startEp.id, startIdx >= 0 ? startIdx : 0), 300);
+            const startEp = lastEp || curEps[0];
+            const idx = curEps.indexOf(startEp);
+            setTimeout(() => playEp(startEp.id, idx >= 0 ? idx : 0), 400);
         } else if (data.type === 'm') {
-            setTimeout(() => playMovie(id, data.lang), 300);
+            setTimeout(() => playMovie(id), 400);
         }
 
     } catch(e) {
-        hideLoading();
-        showToast('Failed to load: ' + e.message, 'error');
+        hideLoader();
+        showToast('Load failed: ' + e.message, 'err');
     }
 }
 
-// ============================================================
+// ════════════════════════════════════════════
 // RENDER PLAYER
-// ============================================================
-function renderPlayerPage(data) {
-    document.getElementById('playerTitle').textContent = data.title || 'Unknown';
-    document.getElementById('currentEpLabel').style.display = 'none';
+// ════════════════════════════════════════════
+function renderPlayer(data) {
+    // Title
+    document.getElementById('pTitle').textContent = data.title || 'Unknown';
+    document.getElementById('epLabel').style.display = 'none';
 
-    // Meta
-    document.getElementById('metaRow').innerHTML = [
-        data.year ? `<span class="meta-badge">${data.year}</span>` : '',
-        data.match ? `<span class="meta-badge rating">⭐ ${data.match}</span>` : '',
-        data.hdsd === 'HD' ? `<span class="meta-badge hd">✨ HD</span>` : '',
-        data.ua ? `<span class="meta-badge age">${data.ua}</span>` : '',
-        data.runtime ? `<span class="meta-badge">🕐 ${data.runtime}</span>` : '',
+    // Badges
+    document.getElementById('pBadges').innerHTML = [
+        data.year ? `<span class="badge">${data.year}</span>` : '',
+        data.match ? `<span class="badge rat">⭐ ${data.match}</span>` : '',
+        data.hdsd==='HD' ? `<span class="badge hd">HD</span>` : '',
+        data.ua ? `<span class="badge age">${data.ua}</span>` : '',
+        data.runtime ? `<span class="badge">🕐 ${data.runtime}</span>` : '',
     ].join('');
 
-    // Genre
-    document.getElementById('genreTags').innerHTML = data.genre
-        ? data.genre.split(',').map(g => `<span class="genre-tag">${g.trim()}</span>`).join('')
-        : '';
+    // Genres
+    document.getElementById('pGenres').innerHTML = (data.genre || '')
+        .split(',').filter(g=>g.trim())
+        .map(g => `<span class="genre-pill">${g.trim()}</span>`)
+        .join('');
 
     // Desc
-    document.getElementById('playerDesc').textContent = data.desc || data.m_desc || 'No description available.';
+    document.getElementById('pDesc').textContent = data.desc || data.m_desc || '';
 
-    // Language
-    const langSelect = document.getElementById('langSelect');
-    langSelect.innerHTML = '';
-    if (data.lang && data.lang.length > 0) {
+    // Lang
+    const langSel = document.getElementById('langSel');
+    langSel.innerHTML = '';
+    if (data.lang?.length) {
         const seen = new Set();
         data.lang.forEach(l => {
             if (!seen.has(l.s)) {
                 seen.add(l.s);
-                const opt = document.createElement('option');
-                opt.value = l.s;
-                opt.textContent = l.l;
-                if (l.s === 'eng') opt.selected = true;
-                langSelect.appendChild(opt);
+                const o = document.createElement('option');
+                o.value = l.s; o.textContent = l.l;
+                if (l.s === 'eng') o.selected = true;
+                langSel.appendChild(o);
             }
         });
-        currentLang = langSelect.value;
+        curLang = langSel.value;
     } else {
-        langSelect.innerHTML = '<option value="eng">English</option>';
+        langSel.innerHTML = '<option value="eng">English</option>';
+        curLang = 'eng';
     }
 
-    // Season select + tabs
-    const seasonSelect = document.getElementById('seasonSelectMain');
-    const seasonsTabs = document.getElementById('seasonsTabs');
-    seasonSelect.innerHTML = '';
-    seasonsTabs.innerHTML = '';
+    // Seasons
+    const seasonSel = document.getElementById('seasonSel');
+    const sTabs = document.getElementById('sTabs');
+    seasonSel.innerHTML = ''; sTabs.innerHTML = '';
 
-    if (data.season && data.season.length > 0) {
-        // Find current season
-        const activeSeason = data.season[data.season.length - 1];
-
+    if (data.season?.length) {
         data.season.forEach(s => {
-            const isActive = currentSeasonId
-                ? s.id === currentSeasonId
-                : s.id === activeSeason.id;
-
-            const opt = document.createElement('option');
-            opt.value = s.id;
-            opt.textContent = `Season ${s.s} (${s.ep} eps)`;
-            if (isActive) opt.selected = true;
-            seasonSelect.appendChild(opt);
+            const isActive = curSeasonId ? s.id === curSeasonId : s === data.season[data.season.length-1];
+            const o = document.createElement('option');
+            o.value = s.id;
+            o.textContent = `Season ${s.s} (${s.ep} eps)`;
+            if (isActive) o.selected = true;
+            seasonSel.appendChild(o);
 
             const tab = document.createElement('button');
-            tab.className = 'season-tab' + (isActive ? ' active' : '');
+            tab.className = 's-tab' + (isActive ? ' active' : '');
             tab.textContent = `S${s.s}`;
             tab.dataset.id = s.id;
-            tab.dataset.s = s.s;
             tab.onclick = () => changeSeason(s.id);
-            seasonsTabs.appendChild(tab);
+            sTabs.appendChild(tab);
         });
-
-        document.getElementById('playerSidebar').style.display = '';
+        document.getElementById('sidebar').style.display = '';
     } else {
-        document.getElementById('playerSidebar').style.display = 'none';
+        document.getElementById('sidebar').style.display = 'none';
     }
 
-    // Episodes
-    renderEpisodes(data.episodes || []);
-
-    // Load more
+    renderEps(data.episodes || []);
     renderLoadMore(data);
 
-    // Info grid
+    // Info
     const fields = [
         ['Cast', data.short_cast || data.cast],
-        ['Director', data.director ? data.director.split(',').slice(0,3).join(', ') : ''],
+        ['Director', data.director?.split(',').slice(0,2).join(', ')],
         ['Creator', data.creator],
         ['Writer', data.writer],
         ['Studio', data.studio],
-        ['Producers', data.producers ? data.producers.split(',').slice(0,2).join(', ') : ''],
-    ].filter(([, v]) => v);
+        ['Producers', data.producers?.split(',').slice(0,2).join(', ')],
+    ].filter(([,v]) => v?.trim());
 
-    document.getElementById('infoGrid').innerHTML = fields.map(([l, v]) => `
+    document.getElementById('pInfo').innerHTML = fields.map(([l, v]) => `
         <div class="info-item">
             <label>${l}</label>
-            <span>${escHtml(v)}</span>
+            <span>${esc(v)}</span>
         </div>
     `).join('');
 
-    // Nav buttons
-    document.getElementById('navButtons').style.display =
-        (data.episodes || []).length > 1 ? 'flex' : 'none';
+    // Nav btns
+    document.getElementById('prevBtn').disabled = true;
+    document.getElementById('nextBtn').disabled = false;
 
-    // Suggestions
-    if (data.suggest && data.suggest.length > 0) {
-        loadSuggestions(data.suggest);
-    } else {
-        document.getElementById('suggestSection').style.display = 'none';
-    }
-
-    // Reset video
-    document.getElementById('videoContainer').innerHTML = `
-        <div class="video-placeholder">
-            <div class="big-icon">▶️</div>
+    // Video reset
+    document.getElementById('vidInner').innerHTML = `
+        <div class="vid-placeholder">
+            <div class="vp-icon">▶️</div>
             <div>Loading player...</div>
         </div>`;
+
+    // Suggestions
+    if (data.suggest?.length) {
+        loadSuggestions(data.suggest);
+    } else {
+        document.getElementById('sugSec').style.display = 'none';
+    }
 }
 
-function renderEpisodes(episodes) {
-    currentEpisodes = episodes;
-    const list = document.getElementById('episodeList');
-    const epCount = document.getElementById('epCount');
-    epCount.textContent = episodes.length;
+function renderEps(eps) {
+    curEps = eps;
+    const list = document.getElementById('epList');
+    document.getElementById('epCnt').textContent = eps.length;
 
-    if (!episodes.length) {
-        list.innerHTML = '<div style="color:var(--text-muted);padding:20px;text-align:center;font-size:13px;">No episodes found</div>';
+    if (!eps.length) {
+        list.innerHTML = '<div style="color:var(--muted);padding:20px;text-align:center;font-size:13px">No episodes</div>';
         return;
     }
 
-    list.innerHTML = episodes.map((ep, idx) => `
-        <div class="episode-item ${ep.id === currentEpisodeId ? 'active' : ''}"
-             id="ep_${ep.id}"
-             onclick="playEpisode('${ep.id}', ${idx})">
-            <div class="ep-number">${ep.ep ? ep.ep.replace('E','') : idx + 1}</div>
+    list.innerHTML = eps.map((ep, i) => `
+        <div class="ep-item ${ep.id === curEpId ? 'active' : ''}"
+             id="ep_${ep.id}" onclick="playEp('${ep.id}', ${i})">
+            <div class="ep-num">${ep.ep?.replace('E','') || i+1}</div>
             <div class="ep-info">
-                <div class="ep-title" title="${escHtml(ep.t || '')}">${escHtml(ep.t || `Episode ${idx + 1}`)}</div>
-                <div class="ep-meta">
-                    <span>${ep.s || ''} ${ep.ep || ''}</span>
+                <div class="ep-name" title="${esc(ep.t||'')}">${esc(ep.t || `Episode ${i+1}`)}</div>
+                <div class="ep-sub">
+                    <span>${ep.s||''} ${ep.ep||''}</span>
                     ${ep.time ? `<span>• ${ep.time}</span>` : ''}
-                    ${ep.r_date ? `<span>• ${ep.r_date}</span>` : ''}
                 </div>
             </div>
         </div>
@@ -1452,265 +1261,223 @@ function renderEpisodes(episodes) {
 }
 
 function renderLoadMore(data) {
-    const container = document.getElementById('loadMoreEps');
+    const wrap = document.getElementById('loadMoreWrap');
     if (data.nextPageShow && data.nextPage && data.nextPageSeason) {
-        container.innerHTML = `
-            <button class="load-more-btn" onclick="loadMoreEpisodes(${data.nextPage}, '${data.nextPageSeason}')">
+        wrap.innerHTML = `
+            <button class="load-more"
+                onclick="loadMoreEps(${data.nextPage},'${data.nextPageSeason}')">
                 Load More Episodes ↓
             </button>`;
     } else {
-        container.innerHTML = '';
+        wrap.innerHTML = '';
     }
 }
 
-// ============================================================
+// ════════════════════════════════════════════
 // SEASON CHANGE
-// ============================================================
-async function changeSeason(seasonId) {
-    if (!seasonId) return;
-    showLoading('Loading season...');
+// ════════════════════════════════════════════
+async function changeSeason(id) {
+    if (!id) return;
+    showLoader('Loading season...');
 
-    document.querySelectorAll('.season-tab').forEach(t => {
-        t.classList.toggle('active', t.dataset.id === seasonId);
-    });
-    document.getElementById('seasonSelectMain').value = seasonId;
+    document.querySelectorAll('.s-tab').forEach(t =>
+        t.classList.toggle('active', t.dataset.id === id));
+    document.getElementById('seasonSel').value = id;
 
     try {
-        const tsParam = Math.floor(Date.now() / 1000);
-        const data = await fetchWithProxy(`${API_BASE}/post.php?id=${seasonId}&t=${tsParam}`);
-        hideLoading();
+        const ts = Math.floor(Date.now() / 1000);
+        const data = await apiFetch(`${API}/post.php?id=${id}&t=${ts}`);
+        hideLoader();
 
-        if (data && data.episodes) {
-            currentSeasonId = seasonId;
-            currentEpisodeId = null;
-            renderEpisodes(data.episodes);
+        if (data?.episodes) {
+            curSeasonId = id;
+            curEpId = null;
+            renderEps(data.episodes);
             renderLoadMore(data);
-            document.getElementById('navButtons').style.display =
-                data.episodes.length > 1 ? 'flex' : 'none';
+            document.getElementById('epCnt').textContent = data.episodes.length;
 
-            // Update lang
-            if (data.lang) {
-                const langSelect = document.getElementById('langSelect');
-                const curVal = langSelect.value;
-                langSelect.innerHTML = '';
+            // Update langs
+            if (data.lang?.length) {
+                const sel = document.getElementById('langSel');
+                const cur = sel.value;
+                sel.innerHTML = '';
                 const seen = new Set();
                 data.lang.forEach(l => {
                     if (!seen.has(l.s)) {
                         seen.add(l.s);
-                        const opt = document.createElement('option');
-                        opt.value = l.s;
-                        opt.textContent = l.l;
-                        if (l.s === curVal) opt.selected = true;
-                        langSelect.appendChild(opt);
+                        const o = document.createElement('option');
+                        o.value = l.s; o.textContent = l.l;
+                        if (l.s === cur) o.selected = true;
+                        sel.appendChild(o);
                     }
                 });
             }
 
-            document.getElementById('epCount').textContent = data.episodes.length;
-            showToast(`Season loaded — ${data.episodes.length} episodes`, 'success');
+            showToast(`Season loaded — ${data.episodes.length} eps`, 'ok');
         }
     } catch(e) {
-        hideLoading();
-        showToast('Failed to load season: ' + e.message, 'error');
+        hideLoader();
+        showToast('Failed: ' + e.message, 'err');
     }
 }
 
-// ============================================================
-// LOAD MORE EPISODES
-// ============================================================
-async function loadMoreEpisodes(page, seasonId) {
-    showLoading('Loading more episodes...');
+async function loadMoreEps(page, seasonId) {
+    showLoader('Loading more...');
     try {
-        const tsParam = Math.floor(Date.now() / 1000);
-        const data = await fetchWithProxy(`${API_BASE}/post.php?id=${seasonId}&t=${tsParam}&page=${page}`);
-        hideLoading();
-
-        if (data && data.episodes) {
-            const merged = [...currentEpisodes, ...data.episodes];
-            renderEpisodes(merged);
+        const ts = Math.floor(Date.now() / 1000);
+        const data = await apiFetch(`${API}/post.php?id=${seasonId}&t=${ts}&page=${page}`);
+        hideLoader();
+        if (data?.episodes) {
+            renderEps([...curEps, ...data.episodes]);
             renderLoadMore(data);
-            showToast(`Loaded ${data.episodes.length} more episodes`, 'success');
+            showToast(`+${data.episodes.length} episodes loaded`, 'ok');
         }
     } catch(e) {
-        hideLoading();
-        showToast('Failed to load more: ' + e.message, 'error');
+        hideLoader();
+        showToast('Failed: ' + e.message, 'err');
     }
 }
 
-// ============================================================
+// ════════════════════════════════════════════
 // PLAY
-// ============================================================
-function playEpisode(epId, index) {
-    currentEpisodeId = epId;
-    currentEpisodeIndex = index;
-    const ep = currentEpisodes[index];
+// ════════════════════════════════════════════
+function playEp(id, idx) {
+    curEpId = id; curEpIdx = idx;
+    const ep = curEps[idx];
 
-    // Highlight active
-    document.querySelectorAll('.episode-item').forEach(el => el.classList.remove('active'));
-    const epEl = document.getElementById(`ep_${epId}`);
-    if (epEl) {
-        epEl.classList.add('active');
-        epEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
+    document.querySelectorAll('.ep-item').forEach(el => el.classList.remove('active'));
+    const el = document.getElementById(`ep_${id}`);
+    if (el) { el.classList.add('active'); el.scrollIntoView({behavior:'smooth',block:'nearest'}); }
 
-    // Update ep label
-    if (ep) {
-        const label = document.getElementById('currentEpLabel');
-        label.textContent = `${ep.s || ''} ${ep.ep || ''} — ${ep.t || ''}`;
-        label.style.display = 'block';
-    }
+    const lbl = document.getElementById('epLabel');
+    if (ep) { lbl.textContent = `${ep.s||''} ${ep.ep||''} — ${ep.t||''}`; lbl.style.display='block'; }
 
-    // Nav buttons state
-    const prevBtn = document.getElementById('prevEpBtn');
-    const nextBtn = document.getElementById('nextEpBtn');
-    if (prevBtn) prevBtn.disabled = index <= 0;
-    if (nextBtn) nextBtn.disabled = index >= currentEpisodes.length - 1;
+    document.getElementById('prevBtn').disabled = idx <= 0;
+    document.getElementById('nextBtn').disabled = idx >= curEps.length - 1;
 
-    // Build URL & load
-    const lang = document.getElementById('langSelect').value || 'eng';
-    currentLang = lang;
-    const embedUrl = `https://net52.cc/pv/embed.php?id=${epId}&lang=${lang}`;
-    loadEmbedPlayer(embedUrl);
-
-    if (ep) showToast(`▶ ${ep.t || 'Episode ' + (index + 1)}`, 'success');
+    const lang = document.getElementById('langSel').value || 'eng';
+    curLang = lang;
+    loadIframe(`${API}/embed.php?id=${id}&lang=${lang}`);
+    if (ep) showToast(`▶ ${ep.t || 'Episode ' + (idx+1)}`, 'ok');
 }
 
-function playMovie(id, langs) {
-    const lang = document.getElementById('langSelect').value || 'eng';
-    const embedUrl = `https://net52.cc/pv/embed.php?id=${id}&lang=${lang}`;
-    loadEmbedPlayer(embedUrl);
+function playMovie(id) {
+    const lang = document.getElementById('langSel').value || 'eng';
+    loadIframe(`${API}/embed.php?id=${id}&lang=${lang}`);
 }
 
-function loadEmbedPlayer(url) {
-    document.getElementById('videoContainer').innerHTML = `
-        <iframe
-            class="video-iframe"
-            src="${url}"
+function loadIframe(url) {
+    document.getElementById('vidInner').innerHTML = `
+        <iframe src="${url}"
             allowfullscreen
             allow="fullscreen; autoplay; encrypted-media; picture-in-picture"
             referrerpolicy="no-referrer"
-            scrolling="no"
-        ></iframe>`;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+            scrolling="no">
+        </iframe>`;
+    window.scrollTo({top:0, behavior:'smooth'});
 }
 
-function reloadPlayer() {
-    if (currentEpisodeId) {
-        playEpisode(currentEpisodeId, currentEpisodeIndex);
-    }
+function reloadVid() {
+    if (curEpId) playEp(curEpId, curEpIdx);
+    else if (curData?.type === 'm') playMovie(curMediaId);
 }
 
-function changeLanguage() {
-    currentLang = document.getElementById('langSelect').value;
-    if (currentEpisodeId) {
-        playEpisode(currentEpisodeId, currentEpisodeIndex);
-    } else if (currentData && currentData.type === 'm') {
-        playMovie(currentMediaId, null);
-    }
+function changeLang() {
+    curLang = document.getElementById('langSel').value;
+    if (curEpId) playEp(curEpId, curEpIdx);
+    else if (curData?.type === 'm') playMovie(curMediaId);
 }
 
-function prevEpisode() {
-    if (currentEpisodeIndex > 0) {
-        const idx = currentEpisodeIndex - 1;
-        playEpisode(currentEpisodes[idx].id, idx);
-    }
+function prevEp() {
+    if (curEpIdx > 0) playEp(curEps[curEpIdx-1].id, curEpIdx-1);
 }
 
-function nextEpisode() {
-    if (currentEpisodeIndex < currentEpisodes.length - 1) {
-        const idx = currentEpisodeIndex + 1;
-        playEpisode(currentEpisodes[idx].id, idx);
-    }
+function nextEp() {
+    if (curEpIdx < curEps.length-1) playEp(curEps[curEpIdx+1].id, curEpIdx+1);
 }
 
-// ============================================================
+// ════════════════════════════════════════════
 // SUGGESTIONS
-// ============================================================
+// ════════════════════════════════════════════
 async function loadSuggestions(suggests) {
-    const section = document.getElementById('suggestSection');
-    const grid = document.getElementById('suggestGrid');
-    section.style.display = '';
-    grid.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:12px 0;">Loading suggestions...</div>';
+    const sec = document.getElementById('sugSec');
+    const grid = document.getElementById('sugGrid');
+    sec.style.display = '';
+    grid.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:10px">Loading...</div>';
 
     try {
-        const items = await Promise.allSettled(
-            suggests.slice(0, 6).map(async s => {
-                const tsParam = Math.floor(Date.now() / 1000);
-                const data = await fetchWithProxy(`${API_BASE}/post.php?id=${s.id}&t=${tsParam}`);
-                return data ? { ...data, id: s.id } : null;
+        const results = await Promise.allSettled(
+            suggests.slice(0,6).map(async s => {
+                const ts = Math.floor(Date.now()/1000);
+                const d = await apiFetch(`${API}/post.php?id=${s.id}&t=${ts}`);
+                return d ? {...d, id: s.id} : null;
             })
         );
-
-        const valid = items
-            .filter(r => r.status === 'fulfilled' && r.value)
-            .map(r => r.value);
-
-        if (valid.length > 0) {
-            grid.innerHTML = valid.map(item => renderCard(item)).join('');
+        const valid = results.filter(r => r.status==='fulfilled' && r.value).map(r => r.value);
+        if (valid.length) {
+            grid.innerHTML = valid.map(renderCard).join('');
         } else {
-            section.style.display = 'none';
+            sec.style.display = 'none';
         }
     } catch(e) {
-        section.style.display = 'none';
+        sec.style.display = 'none';
     }
 }
 
-// ============================================================
-// PAGE MANAGEMENT
-// ============================================================
-function showPage(pageId) {
-    ['home-page', 'search-page', 'player-page'].forEach(id => {
-        document.getElementById(id).style.display = 'none';
+// ════════════════════════════════════════════
+// PAGE NAV
+// ════════════════════════════════════════════
+function showPage(name) {
+    const map = { home:'pg-home', search:'pg-search', player:'pg-player' };
+    Object.values(map).forEach(id => {
+        const el = document.getElementById(id);
+        el.classList.remove('active');
+        el.style.display = 'none';
     });
-    document.getElementById(pageId).style.display = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const el = document.getElementById(map[name]);
+    el.classList.add('active');
+    el.style.display = 'block';
+    window.scrollTo({top:0, behavior:'smooth'});
 }
 
 function goHome() {
-    showPage('home-page');
-    document.getElementById('navSearch').value = '';
-    document.getElementById('heroSearch').value = '';
+    showPage('home');
+    document.getElementById('navInp').value = '';
+    document.getElementById('heroInp').value = '';
 }
 
 function goBack() {
-    if (prevPage === 'search-page') {
-        showPage('search-page');
-    } else {
-        goHome();
-    }
+    showPage(prevPg === 'search' ? 'search' : 'home');
 }
 
-// ============================================================
+// ════════════════════════════════════════════
 // UI HELPERS
-// ============================================================
-function showLoading(text = 'Loading...') {
-    document.getElementById('loadingText').textContent = text;
-    document.getElementById('proxyStatus').textContent = '';
-    document.getElementById('loadingOverlay').classList.add('show');
+// ════════════════════════════════════════════
+function showLoader(txt='Loading...', sub='') {
+    document.getElementById('loadTxt').textContent = txt;
+    document.getElementById('loadSub').textContent = sub;
+    document.getElementById('loader').classList.add('on');
 }
 
-function hideLoading() {
-    document.getElementById('loadingOverlay').classList.remove('show');
-    document.getElementById('proxyStatus').textContent = '';
+function hideLoader() {
+    document.getElementById('loader').classList.remove('on');
 }
 
-let toastTimer;
-function showToast(message, type = 'info') {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.className = `toast ${type} show`;
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { toast.className = 'toast'; }, 3500);
+let _toast;
+function showToast(msg, type='inf') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast ${type} on`;
+    clearTimeout(_toast);
+    _toast = setTimeout(() => t.className='toast', 3500);
 }
 
-function escHtml(str) {
-    if (!str) return '';
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function esc(s) {
+    if (!s) return '';
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ============================================================
 // START
-// ============================================================
 init();
 </script>
 </body>
